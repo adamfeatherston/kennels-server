@@ -1,9 +1,47 @@
+from .location_requests import get_single_location
+from .customer_requests import get_single_customer
+
 ANIMALS = [
-    {"id": 1, "name": "Snickers", "species": "Dog", "locationId": 1, "customerId": 4, "status": "Admitted"},
-    {"id": 2, "name": "Roman", "species": "Dog", "locationId": 1, "customerId": 2, "status": "Admitted"},
-    {"id": 3, "name": "Blue", "species": "Cat", "locationId": 2, "customerId": 1, "status": "Admitted"},
-    {"id": 4, "name": "Thor", "species": "Dog", "locationId": 2, "customerId": 3, "status": "Admitted"},
-    {"id": 5, "name": "Rocco", "species": "Dog", "locationId": 2, "customerId": 3, "status": "Admitted"},
+    {
+        "id": 1,
+        "name": "Snickers",
+        "species": "Dog",
+        "locationId": 1,
+        "customerId": 1,
+        "status": "Admitted",
+    },
+    {
+        "id": 2,
+        "name": "Roman",
+        "species": "Dog",
+        "locationId": 1,
+        "customerId": 2,
+        "status": "Admitted",
+    },
+    {
+        "id": 3,
+        "name": "Blue",
+        "species": "Cat",
+        "locationId": 2,
+        "customerId": 1,
+        "status": "Admitted",
+    },
+    {
+        "id": 4,
+        "name": "Thor",
+        "species": "Dog",
+        "locationId": 2,
+        "customerId": 2,
+        "status": "Admitted",
+    },
+    {
+        "id": 5,
+        "name": "Rocco",
+        "species": "Dog",
+        "locationId": 2,
+        "customerId": 2,
+        "status": "Admitted",
+    },
 ]
 
 
@@ -24,9 +62,18 @@ def get_single_animal(id):
         if animal["id"] == id:
             requested_animal = animal
 
+            matching_location = get_single_location(requested_animal["locationId"])
+            requested_animal["location"] = matching_location
+
+            matching_customer = get_single_customer(requested_animal["customerId"])
+            requested_animal["customer"] = matching_customer
+
+            requested_animal.pop("locationId", None)
+            requested_animal.pop("customerId", None)
+
     return requested_animal
-
-
+          
+  
 def create_animal(animal):
     # Get the id value of the last animal in the list
     max_id = ANIMALS[-1]["id"]
@@ -58,6 +105,7 @@ def delete_animal(id):
     # If the animal was found, use pop(int) to remove it from list
     if animal_index >= 0:
         ANIMALS.pop(animal_index)
+
 
 def update_animal(id, new_animal):
     # Iterate the ANIMALS list, but use enumerate() so that

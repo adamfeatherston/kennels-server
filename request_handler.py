@@ -29,6 +29,11 @@ from views import (
     update_employee,
 )
 
+from models import Animal
+from models import Customer
+from models import Employee
+from models import Location
+
 # Here's a class. It inherits from another class.
 # For now, think of a class as a container for functions that
 # work together for a common purpose. In this case, that
@@ -75,8 +80,8 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         if resource == "animals":
             if id is not None:
-                response = get_single_animal(id)
-
+                response = get_single_animal(id)              
+               
             else:
                 response = get_all_animals()
 
@@ -219,7 +224,8 @@ class HandleRequests(BaseHTTPRequestHandler):
         """Sets the options headers"""
         self.send_response(200)
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+        self.send_header("Access-Control-Allow-Methods",
+                         "GET, POST, PUT, DELETE")
         self.send_header(
             "Access-Control-Allow-Headers", "X-Requested-With, Content-Type, Accept"
         )

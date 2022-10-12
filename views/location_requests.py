@@ -56,6 +56,7 @@ def delete_location(id):
     if location_index >= 0:
         LOCATIONS.pop(location_index)
 
+
 def update_location(id, new_location):
     # Iterate the LOCATIONS list, but use enumerate() so that
     # you can access the index value of each item.
