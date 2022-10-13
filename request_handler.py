@@ -1,5 +1,6 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from urllib import response
 from views import (
     get_all_animals,
     get_single_animal,
@@ -73,19 +74,31 @@ class HandleRequests(BaseHTTPRequestHandler):
     # It handles any GET request.
     def do_GET(self):
         self._set_headers(200)
-        response = {}  # Default response
-
         # Parse the URL and capture the tuple that is returned
         (resource, id) = self.parse_url(self.path)
 
-        if resource == "animals":
+        if resource == "animals":         
+            
             if id is not None:
-                response = get_single_animal(id)              
-               
+                response = get_single_animal(id)
+                
+                if response is not None:
+                   self._set_headers(200)
+
+                else:
+                    self._set_headers(404)
+                    response = { "message": f"Animal {id} is out playing right now" }      
+          
             else:
+                self._set_headers(200)
                 response = get_all_animals()
 
+        else:
+            self._set_headers(404)
+            response = { "message": f"Ruh, roh: something went wrong" }  
+
         if resource == "locations":
+            self._set_headers(200)
             if id is not None:
                 response = get_single_location(id)
 
@@ -112,7 +125,7 @@ class HandleRequests(BaseHTTPRequestHandler):
     # It handles any POST request.
 
     def do_POST(self):
-        self._set_headers(201)
+        
         content_len = int(self.headers.get("content-length", 0))
         post_body = self.rfile.read(content_len)
 
@@ -124,7 +137,7 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         # Initialize new entry(s)
         new_entry = None
-
+       
         # Add a new animal to the list. Don't worry about
         # the orange squiggle, you'll define the create_animal
         # function next.
@@ -134,9 +147,14 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         # Add a new location to the list.
         if resource == "locations":
-            # Initialize new location
-            new_entry = create_location(post_body)
-
+            # Initialize new location: both name and address properties must be present in POST dictionary/body to be posted.
+            if "name" in post_body and "address" in post_body:
+                self._set_headers(201)
+                new_entry = create_location(post_body)
+            else:
+                self._set_headers(400)
+                new_entry = {"message": f'{"name is required" if "name" not in post_body else ""} {"address is required" if "address" not in post_body else ""}'}
+      
         # Add a new employee to the list.
         if resource == "employees":
             # Initialize new location
@@ -151,30 +169,32 @@ class HandleRequests(BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(new_entry).encode())
 
     def do_DELETE(self):
-        # Set a 204 response code
-        self._set_headers(204)
-
+      
         # Parse the URL
         (resource, id) = self.parse_url(self.path)
 
         # Delete a single animal from the list
         if resource == "animals":
+            self._set_headers(204)
             delete_animal(id)
 
         # Delete a single customer from the list
         if resource == "customers":
-            delete_customer(id)
+            self._set_headers(405)
+            response = { "message": f"Ruh, roh: This function is not supported, sorry!" }
 
         # Delete a single employee from the list
         if resource == "employees":
+            self._set_headers(204)
             delete_employee(id)
 
         # Delete a single location from the list
         if resource == "locations":
+            self._set_headers(204)
             delete_location(id)
 
         # Encode the new resource and send in response
-        self.wfile.write("".encode())
+        self.wfile.write(json.dumps(response).encode())
 
     # A method that handles any PUT request.
     def do_PUT(self):
