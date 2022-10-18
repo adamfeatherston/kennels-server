@@ -33,8 +33,8 @@ CREATE TABLE `Employee` (
 
 );
 
-INSERT INTO `Location` VALUES (null, 'Nashville North', "64 Washington Heights");
-INSERT INTO `Location` VALUES (null, 'Nashville South', "101 Penn Ave");
+INSERT INTO `Location` VALUES (null, "Nashville North", "64 Washington Heights");
+INSERT INTO `Location` VALUES (null, "Nashville South", "101 Penn Ave");
 
 
 INSERT INTO `Employee` VALUES (null, "Madi Peper", "35498 Madison Ave", 1);
@@ -61,3 +61,21 @@ INSERT INTO `Animal` VALUES (null, "Popcorn", "Kennel", "Beagle", 3, 2);
 INSERT INTO `Animal` VALUES (null, "Curly", "Treatment", "Poodle", 4, 2);
 
 INSERT INTO `Animal` VALUES (null, "Daps", "Kennel", "Boxer", 2, 2);
+
+SELECT
+    a.id,
+    a.name,
+    a.status,
+    a.breed,
+    a.location_id,
+    a.customer_id,
+    l.name location_name,
+    l.address location_address,
+	c.name customer_name,
+	c.address customer_address,
+	c.email customer_email
+FROM Animal a
+JOIN Location l
+    ON l.id = a.location_id
+JOIN Customer c 
+	ON c.id = a.customer_id

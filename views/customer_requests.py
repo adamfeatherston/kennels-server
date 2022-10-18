@@ -20,7 +20,7 @@ def get_all_customers():
             c.address,
             c.email,
             c.password
-        FROM customer c
+        FROM Customer c
         """
         )
 
@@ -43,7 +43,7 @@ def get_all_customers():
 
             customers.append(customer.__dict__)
 
-    return customers
+    return json.dumps(customers)
 
 
 # Function with a single parameter
@@ -62,7 +62,7 @@ def get_single_customer(id):
             c.address,
             c.email,
             c.password
-        FROM customer c
+        FROM Customer c
         WHERE c.id = ?
         """,
             (id,),
@@ -135,13 +135,13 @@ def get_customers_by_email(email):
         # Write the SQL query to get the information you want
         db_cursor.execute(
             """
-        select
+        SELECT
             c.id,
             c.name,
             c.address,
             c.email,
             c.password
-        from Customer c
+        FROM Customer c
         WHERE c.email = ?
         """,
             (email,),

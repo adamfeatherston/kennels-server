@@ -2,6 +2,7 @@ from .location_requests import get_single_location
 import sqlite3
 import json
 from models import Employee
+from models import Location
 
 
 def get_all_employees():
@@ -19,8 +20,12 @@ def get_all_employees():
             e.id,
             e.name,
             e.address,
-            e.location_id
-        FROM employee e
+            e.location_id,
+            l.name location_name,
+            l.address location_address
+        FROM Employee e
+        JOIN Location l
+            ON l.id = e.location_id
         """
         )
 
@@ -41,9 +46,16 @@ def get_all_employees():
                 row["id"], row["name"], row["address"], row["location_id"]
             )
 
+            # Create a Location instance from the current row
+            location = Location(
+                row["id"], row["location_name"], row["location_address"]
+            )
+
+            employee.location = location.__dict__
+           
             employees.append(employee.__dict__)
 
-    return employees
+    return json.dumps(employees)
 
 
 # Function with a single parameter
@@ -61,7 +73,7 @@ def get_single_employee(id):
             e.name,
             e.address,
             e.location_id
-        FROM employee e
+        FROM Employee e
         WHERE e.id = ?
         """,
             (id,),
@@ -123,6 +135,7 @@ def update_employee(id, new_employee):
             EMPLOYEES[index] = new_employee
             break
 
+
 def get_employees_by_location(location):
 
     with sqlite3.connect("./kennel.sqlite3") as conn:
@@ -137,7 +150,7 @@ def get_employees_by_location(location):
             e.name,
             e.address,
             e.location_id
-        FROM employee e
+        FROM Employee e
         WHERE e.location_id = ?
         """,
             (location,),
