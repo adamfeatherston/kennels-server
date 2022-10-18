@@ -18,7 +18,7 @@ def get_all_locations():
             l.id,
             l.name,
             l.address
-        FROM location l
+        FROM Location l
         """
         )
 
@@ -35,13 +35,11 @@ def get_all_locations():
             # Note that the database fields are specified in
             # exact order of the parameters defined in the
             # Location class above.
-            location = Location(
-                row["id"], row["name"], row["address"]
-            )
+            location = Location(row["id"], row["name"], row["address"])
 
             locations.append(location.__dict__)
 
-    return locations
+    return json.dumps(locations)
 
 
 # Function with a single parameter
@@ -58,7 +56,7 @@ def get_single_location(id):
             l.id,
             l.name,
             l.address
-        FROM location l
+        FROM Location l
         WHERE l.id = ?
         """,
             (id,),
@@ -68,11 +66,7 @@ def get_single_location(id):
         data = db_cursor.fetchone()
 
         # Create an customer instance from the current row
-        location = Location(
-            data["id"],
-            data["name"],
-            data["address"]
-        )
+        location = Location(data["id"], data["name"], data["address"])
 
         return location.__dict__
 
